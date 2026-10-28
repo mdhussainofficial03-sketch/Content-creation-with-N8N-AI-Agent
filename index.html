@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Automation Workflow for Social Media</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1><i class="fas fa-robot"></i> Content-creation-with-N8N-AI-Agent</h1>
+            <h2>🎬 Animation Automation Workflow for Social Media</h2>
+            <p>Welcome to the <strong>Animation Automation</strong> workflow! This is a powerful n8n workflow designed to automatically create and publish unique, viral-style animated videos to YouTube Shorts and Facebook, all without human intervention.</p>
+            <img src="https://github.com/user-attachments/assets/91cd2588-6155-40ae-be09-01ca2604d66a" alt="Animation Automation - n8n DEV" class="hero-image">
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="features">
+            <h2>✨ What Does It Do?</h2>
+            <p>This workflow handles the entire creative process from start to finish:</p>
+            <ol>
+                <li><strong><i class="fas fa-clock"></i> Triggers on a Schedule:</strong> The workflow runs automatically on a set schedule (e.g., every Tuesday, Thursday, and Saturday at 10 AM).</li>
+                <li><strong><i class="fas fa-lightbulb"></i> Generates a Concept:</strong> It uses a Gemini AI model to generate a random, high-potential viral video prompt about cute animals and an orange cat.</li>
+                <li><strong><i class="fas fa-pen-nib"></i> Enhances the Prompt:</strong> The initial prompt is enhanced with a second Gemini model to add specific details for an engaging 8-second animated loop with a dynamic background.</li>
+                <li><strong><i class="fas fa-video"></i> Generates the Video:</strong> The enhanced prompt is sent to Google's Veo AI on Vertex AI to generate a high-quality 3D animated video in the requested style.</li>
+                <li><strong><i class="fas fa-music"></i> Generates and Mixes Audio:</strong> Simultaneously, it generates a cheerful kids' rhyme using Gemini and a royalty-free background music track from a Google Sheet. It then uses FFmpeg to merge the video, voiceover, and music with professional audio mixing.</li>
+                <li><strong><i class="fas fa-rocket"></i> Publishes to Social Media:</strong> The final, polished video is automatically uploaded to your connected YouTube and Facebook accounts, ready for sharing!</li>
+            </ol>
+
+            <h3>Example</h3>
+            <p>Here is an example of the video concepts it can generate:</p>
+            <video controls width="100%" class="example-video">
+                <source src="https://github.com/user-attachments/assets/1abda1a2-64c8-499f-a884-e4958144420c" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </section>
+
+        <section class="prerequisites">
+            <h2>⚙️ Prerequisites to Run this Workflow (Detailed Guide)</h2>
+            <p>This section provides a step-by-step guide for setting up all the necessary services and software to run the workflow smoothly.</p>
+
+            <h3>Step 1: Create a Local <code>assets</code> Folder</h3>
+            <p>First, you need to create a folder on your local machine or server where your n8n instance is running. This folder will be used to temporarily store the video, voiceover, and background music files.</p>
+            <ul>
+                <li>Create a folder named <code>assets</code> in the same directory where your n8n workflow files are located. The workflow will read from and write to this folder.</li>
+            </ul>
+
+            <h3>Step 2: Set up the n8n Server and Dependencies</h3>
+            <ul>
+                <li><strong>Node.js & npm:</strong> If you are setting up n8n manually, ensure you have a recent version of Node.js installed on your server (version 18 or later is recommended). You can download it from the official Node.js website.</li>
+                <li><strong>Docker (Recommended):</strong> The easiest and most reliable way to run n8n is using Docker. It handles all dependencies for you, including Node.js. Follow the official Docker installation guide for your operating system and then use the n8n Docker image to get your instance running.</li>
+            </ul>
+
+            <h3>Step 3: Install FFmpeg</h3>
+            <p>FFmpeg is a critical command-line tool used by the <code>Execute Command</code> node to merge the video, voiceover, and background music files. It must be installed on the server where your n8n instance is running and be accessible from the command line.</p>
+            <ul>
+                <li><strong>On Windows:</strong> Download a recent FFmpeg build from a trusted source. Unzip the files and add the <code>bin</code> directory to your system's PATH environment variable.</li>
+                <li><strong>On macOS:</strong> The simplest way is to use Homebrew. Open your terminal and run: <code>brew install ffmpeg</code></li>
+                <li><strong>On Linux (Debian/Ubuntu):</strong> Use the <code>apt</code> package manager: <code>sudo apt update && sudo apt install ffmpeg</code></li>
+            </ul>
+
+            <h3>Step 4: Google Cloud Platform (GCP) Setup</h3>
+            <p>This workflow uses Google's Vertex AI for video generation and Google Cloud Storage (GCS) to manage the output files. You will need a GCP account to set this up.</p>
+            <ol>
+                <li><strong>Create a New GCP Project:</strong> Go to the Google Cloud Console and create a new project. This will be where your services and billing are managed.
+                    <blockquote>The standard Google Cloud free trial offers new customers $300 in free credits for 90 days, which can be used for any Google Cloud product. After the 90-day period or when the $300 credit runs out, whichever comes first, you are no longer eligible for the free trial and can upgrade to a paid account. There is no obligation to do so, and you can remain in the Free Tier for many products without charge as long as you stay within specific usage limits.</blockquote>
+                </li>
+                <li><strong>Enable Required APIs:</strong> In the GCP console, navigate to "APIs & Services" > "Library" and enable the following APIs:
+                    <ul>
+                        <li><strong>Vertex AI API</strong></li>
+                        <li><strong>Cloud Storage API</strong></li>
+                    </ul>
+                </li>
+                <li><strong>Create a GCS Bucket:</strong> Go to the "Cloud Storage" section and create a new bucket. This bucket will be used by the Veo AI model to store the generated video. Remember the exact name of this bucket.</li>
+                <li><strong>Set up Service Account & Permissions:</strong>
+                    <ul>
+                        <li>Create a service account with the necessary permissions for your n8n instance to access your GCP resources.</li>
+                        <li>Grant this service account the <strong><code>Vertex AI User</code></strong> and <strong><code>Storage Object Admin</code></strong> roles to allow it to run the AI model and write to the GCS bucket.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Step 5: API and Credential Setup in n8n</h3>
+            <p>For the workflow to connect to the external services, you must create and configure credentials in your n8n instance.</p>
+            <ol>
+                <li><strong>Google Cloud (OAuth2):</strong> This credential is used to authenticate with GCP. Create a new "Google Cloud (OAuth2)" credential and link it to the service account you created in Step 4.</li>
+                <li><strong>Eleven Labs API Key:</strong> Create a new "HTTP Header Auth" credential and enter your Eleven Labs API key.</li>
+                <li><strong>Google Sheets (OAuth2):</strong> I will provide you with a pre-formatted Google Sheet that contains a list of background music links in a column titled <code>Bg music link</code>. You just need to copy this sheet to your own Google Drive account. Then, create a "Google Sheets (OAuth2)" credential to grant the workflow access to your sheet.</li>
+                <li><strong>Google Drive (OAuth2):</strong> I will also provide you with a Google Drive folder link containing all the necessary background audios. Create a "Google Drive (OAuth2)" credential to allow the workflow to download these files.</li>
+                <li><strong>YouTube (OAuth2):</strong> Create a "YouTube (OAuth2)" credential to enable the workflow to upload videos to your channel.</li>
+                <li><strong>Facebook Graph API:</strong> Create a "Facebook Graph API" credential with access to your Facebook Page for video uploading.</li>
+            </ol>
+        </section>
+
+        <section class="changes">
+            <h2>🛠️ Required Changes to the Workflow</h2>
+            <p>This workflow is an export and does <strong>not</strong> contain any of my personal API keys, account IDs, or private data. You <strong>must</strong> replace all placeholders with your own information.</p>
+            <ol>
+                <li><strong>Import the Workflow:</strong> Import the provided JSON file into your n8n instance.</li>
+                <li><strong>Connect Credentials:</strong> Go to each node that has a "Credentials" section and connect your own credentials. The workflow will show a warning if credentials are not set.</li>
+                <li><strong>Update Hardcoded Values:</strong> Manually update the following nodes by replacing the placeholder values:
+                    <ul>
+                        <li><strong>Generate Cartoon Video (Veo on Vertex AI):</strong>
+                            <ul>
+                                <li>In the URL, replace <code>YOUR_GOOGLE_CLOUD_PROJECT_ID</code> with your actual GCP Project ID.</li>
+                                <li>In the <code>storageUri</code>, replace <code>YOUR_GCS_BUCKET_NAME</code> with your GCS bucket name.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Get All BG Music Links:</strong>
+                            <ul>
+                                <li>Replace <code>YOUR_GOOGLE_SHEET_ID_HERE</code> with your Google Sheet's document ID.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Download BG Music from Drive:</strong>
+                            <ul>
+                                <li>Replace <code>YOUR_GOOGLE_DRIVE_FILE_ID_OR_URL_HERE</code> with the URL of your background music file on Google Drive.</li>
+                            </ul>
+                        </li>
+                        <li><strong>My Facebook Page Upload:</strong>
+                            <ul>
+                                <li>Replace <code>YOUR_FACEBOOK_PAGE_ID</code> with your Facebook Page ID.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ol>
+            <p>Once you have made these changes, the workflow is ready to run!</p>
+        </section>
+
+        <section class="support">
+            <h2>❤️ Support My Work</h2>
+            <p>If you found this workflow useful and want to support my work, you can buy me a coffee!</p>
+            <a href="https://buymeacoffee.com/piplup/e/461299" class="btn"><i class="fas fa-coffee"></i> Buy Me a Coffee</a>
+            <p>Thank you for your support! 🙏<br>
+            For any issues or questions, feel free to contact me at <a href="mailto:shubhamnevgi27.sn@gmail.com">shubhamnevgi27.sn@gmail.com</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Animation Automation Workflow</p>
+        </div>
+    </footer>
+</body>
+</html>
